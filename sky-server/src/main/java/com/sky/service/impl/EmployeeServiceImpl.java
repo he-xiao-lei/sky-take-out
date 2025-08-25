@@ -56,4 +56,25 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employee;
     }
 
+    /**
+     * 新增员工
+     * @param employeeDTO
+     */
+    @Override
+    public void save(EmployeeDTO employeeDTO) {
+        //转换为employee对象
+        Employee employee = new Employee();
+        //对象属性拷贝
+        BeanUtils.copyProperties(employeeDTO,employee);
+        //设置账号状态,1正常，2不正常
+        employee.setStatus(StatusConstant.ENABLE);
+        // 加密后设置密码,PasswordConstant.DEFAULT是默认密码
+        employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
+        // 创建时间
+        employee.setCreateTime(LocalDateTime.now());
+        // 修改时间
+        employee.setUpdateTime(LocalDateTime.now());
+        employeeMapper.save(employee);
+    }
+
 }
