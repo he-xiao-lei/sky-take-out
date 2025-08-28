@@ -30,4 +30,6 @@ public interface EmployeeMapper {
     Page<Employee> queryPages(EmployeePageQueryDTO employeePageQueryDTO);
 
     void update(Employee employee);
+
+    Employee getById(Long id);
 }
