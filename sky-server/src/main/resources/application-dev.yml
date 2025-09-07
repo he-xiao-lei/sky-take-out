@@ -9,5 +9,5 @@ sky:
   alioss:
     endpoint: "oss-cn-hangzhou.aliyuncs.com"
     bucket-name: "suiseiseki-javaai"
-    access-key-secret: BBwf4DhoogJndJ4epURSdPUrOBnbmm
+    access-key-secret: AEBDE44664F25AE1F6A97699E2BB742A
     access-key-id: LTAI5tDw6oMaT3CEEBZtzqk9
