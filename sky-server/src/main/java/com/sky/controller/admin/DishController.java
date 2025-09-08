@@ -12,7 +12,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 菜品管理
@@ -44,6 +47,14 @@ public class DishController {
         return Result.success(pageResult);
         
     }
-
+    @DeleteMapping
+    @ApiOperation(value = "批量删除菜品操作")
+    @Transactional
+    public Result deleteById(@RequestParam List<Long> ids){
+        log.info("菜品批量删除{}",ids);
+        dishService.deleteById(ids);
+        
+        return Result.success();
+    }
 
 }
