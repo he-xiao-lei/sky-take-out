@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping
+@RequestMapping("/admin/setmeal")
 @Api(tags = "套餐相关接口")
 @RequiredArgsConstructor
 @Slf4j

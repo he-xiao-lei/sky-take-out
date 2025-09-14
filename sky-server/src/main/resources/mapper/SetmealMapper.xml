@@ -6,7 +6,7 @@
 
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into setmeal(category_id, name, price, description, image) VALUES
-            (#{categoryId},#{name},#{price},#{description},#{image})
+        insert into setmeal(category_id, name, price, description, image,create_user,create_time,update_user,update_time) VALUES
+            (#{categoryId},#{name},#{price},#{description},#{image},#{createUser},#{createTime},#{updateUser},#{updateTime})
     </insert>
 </mapper>
