@@ -48,6 +48,16 @@ public class setmealServiceImpl implements SetmealService {
         
         return new PageResult(result.getTotal(),result.getResult());
     }
+    
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        Setmeal setmeal = Setmeal.builder()
+                .status(status)
+                .id(id)
+                .build();
+        
+        setmealMapper.update(setmeal);
+    }
 
 
 //    @Override

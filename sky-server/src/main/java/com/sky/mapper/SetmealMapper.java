@@ -27,4 +27,6 @@ public interface SetmealMapper {
     void insert(Setmeal setmeal);
     
     Page<Setmeal> queryPages(SetmealPageQueryDTO setmealPageQueryDTO);
+    
+    void update(Setmeal setmeal);
 }

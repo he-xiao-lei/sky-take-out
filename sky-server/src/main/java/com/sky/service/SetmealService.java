@@ -9,5 +9,7 @@ public interface SetmealService {
     void save(SetmealDTO setmealDTO);
     
     PageResult queryPages(SetmealPageQueryDTO setmealPageQueryDTO);
+    
+    void startOrStop(Integer status, Long id);
 //    SetmealVO getSetMealById(Integer id);
 }
