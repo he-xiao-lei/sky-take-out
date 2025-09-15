@@ -23,7 +23,7 @@ public interface SetmealMapper {
     Integer countByCategoryId(Long id);
     
     @Select("select * from setmeal where id = #{id}")
-    SetmealVO getSetMealById(Integer id);
+    Setmeal getSetMealById(Integer id);
     
     @AutoFill(OperationType.INSERT)
     void insert(Setmeal setmeal);

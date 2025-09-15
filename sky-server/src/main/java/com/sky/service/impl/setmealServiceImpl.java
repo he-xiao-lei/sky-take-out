@@ -13,6 +13,7 @@ import com.sky.service.SetmealService;
 import com.sky.vo.SetmealVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +37,7 @@ public class setmealServiceImpl implements SetmealService {
         Long id = setmeal.getId();
         
         List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
-        if (setmealDishes != null && setmealDishes.isEmpty()) {
+        if (setmealDishes != null && !setmealDishes.isEmpty()) {
             setmealDishes.forEach(dish -> dish.setSetmealId(id));
             setmealDishMapper.insertBatch(setmealDishes);
         }
@@ -63,6 +64,22 @@ public class setmealServiceImpl implements SetmealService {
 
     @Override
     public SetmealVO getSetMealById(Integer id) {
-        return setmealMapper.getSetMealById(id);
+        // 查出套餐数据
+        Setmeal setMeal = setmealMapper.getSetMealById(id);
+        Long setMealId = setMeal.getId();
+        //查出套餐里菜品数据
+        List<SetmealDish> dishBySetmealById = setmealDishMapper.getDishBySetmealById(id);
+        dishBySetmealById.forEach(dish->dish.setSetmealId(setMealId));
+        
+        SetmealVO setmealVO = new SetmealVO();
+        BeanUtils.copyProperties(setMeal,setmealVO);
+        setmealVO.setSetmealDishes(dishBySetmealById);
+        return setmealVO;
+    }
+    
+    @Override
+    @Transactional
+    public void deleteByIds(List<Long> ids) {
+    
     }
 }
