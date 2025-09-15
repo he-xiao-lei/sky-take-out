@@ -28,15 +28,20 @@ public class setmealServiceImpl implements SetmealService {
     @Override
     @Transactional
     public void save(SetmealDTO setmealDTO) {
+        
+        
         Setmeal setmeal = new Setmeal();
         BeanUtils.copyProperties(setmealDTO, setmeal);
         
-        
+        // 插入套餐数据
         setmealMapper.insert(setmeal);
+        // 获取套餐id(主键返回)
         Long id = setmeal.getId();
-        
+        // 获取前端传过来的套餐里的菜品数据
         List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
+        //判断是否为空
         if (setmealDishes != null && !setmealDishes.isEmpty()) {
+            // 批量为每个菜品关联套餐id
             setmealDishes.forEach(dish -> dish.setSetmealId(id));
             setmealDishMapper.insertBatch(setmealDishes);
         }
@@ -79,5 +84,6 @@ public class setmealServiceImpl implements SetmealService {
     @Override
     @Transactional
     public void deleteByIds(List<Long> ids) {
+        // TODO 批量删除
     }
 }
