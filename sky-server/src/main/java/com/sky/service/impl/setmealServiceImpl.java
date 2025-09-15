@@ -10,6 +10,7 @@ import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.SetmealService;
+import com.sky.vo.SetmealVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -60,8 +61,8 @@ public class setmealServiceImpl implements SetmealService {
     }
 
 
-//    @Override
-//    public SetmealVO getSetMealById(Integer id) {
-//        setmealMapper.getSetMealById(id);
-//    }
+    @Override
+    public SetmealVO getSetMealById(Integer id) {
+        return setmealMapper.getSetMealById(id);
+    }
 }
