@@ -84,6 +84,21 @@ public class setmealServiceImpl implements SetmealService {
     @Override
     @Transactional
     public void deleteByIds(List<Long> ids) {
-        // TODO 批量删除
+        //查看是否在起售中
+        
+        // 删除套餐内菜品数据
+        
+        
+        
+    }
+    
+    @Override
+    public void update(SetmealDTO setmealDTO) {
+        Setmeal setmeal = new Setmeal();
+        BeanUtils.copyProperties(setmealDTO,setmeal);
+        // 修改套餐基本表
+        setmealMapper.update(setmeal);
+        
+//        setmealDishMapper.
     }
 }

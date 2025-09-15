@@ -61,7 +61,11 @@ public class setmealController {
         return Result.success();
     }
     
-    
-    
+    // TODO 修改套餐
+    @PutMapping
+    public Result update(@RequestBody SetmealDTO setmealDTO){
+        setMealService.update(setmealDTO);
+        return Result.success();
+    }
 }
 
