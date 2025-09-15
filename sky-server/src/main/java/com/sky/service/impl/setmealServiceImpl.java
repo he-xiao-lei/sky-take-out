@@ -13,7 +13,6 @@ import com.sky.service.SetmealService;
 import com.sky.vo.SetmealVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,7 +67,7 @@ public class setmealServiceImpl implements SetmealService {
         Setmeal setMeal = setmealMapper.getSetMealById(id);
         Long setMealId = setMeal.getId();
         //查出套餐里菜品数据
-        List<SetmealDish> dishBySetmealById = setmealDishMapper.getDishBySetmealById(id);
+        List<SetmealDish> dishBySetmealById = setmealDishMapper.getDishesBySetMealId(id);
         dishBySetmealById.forEach(dish->dish.setSetmealId(setMealId));
         
         SetmealVO setmealVO = new SetmealVO();
@@ -80,6 +79,5 @@ public class setmealServiceImpl implements SetmealService {
     @Override
     @Transactional
     public void deleteByIds(List<Long> ids) {
-    
     }
 }
