@@ -9,6 +9,12 @@
               (#{dish.setmealId},#{dish.dishId},#{dish.name},#{dish.price},#{dish.copies})
             </foreach>
     </insert>
+    <delete id="deleteBySetmealIds">
+        delete from setmeal_dish where setmeal_id in
+            <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+    </delete>
 
 
     <select id="getSetmealIdsByDishIds" resultType="java.lang.Long">
@@ -17,11 +23,9 @@
                 #{dishId}
             </foreach>
     </select>
-    <select id="getDishsBySetMealIds" resultType="java.lang.Long">
-        select dish_id from setmeal_dish where setmeal_id in
-            <foreach collection="ids" item="id" separator="," open="(" close=")">
-                #{id}
-            </foreach>
+    <select id="getDishsBySetMealId" resultType="com.sky.entity.Dish">
+        select d.* from dish d left join setmeal_dish sd on d.id = sd.dish_id where sd.setmeal_id = #{id}
+
     </select>
 
 </mapper>

@@ -6,10 +6,10 @@ import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
+import com.sky.entity.Dish;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
 import com.sky.exception.DeletionNotAllowedException;
-import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
@@ -20,8 +20,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -68,6 +66,13 @@ public class setmealServiceImpl implements SetmealService {
                 .id(id)
                 .build();
         // TODO MessageConstant.SETMEAL_ENABLE_FAILED
+        List<Dish> dishsBySetMealIds = setmealDishMapper.getDishsBySetMealId(id);
+        
+        dishsBySetMealIds.forEach(dish -> {
+            if (dish.getStatus().equals(StatusConstant.DISABLE)){
+                throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ENABLE_FAILED);
+            }
+        });
         setmealMapper.update(setmeal);
     }
     
@@ -97,15 +102,13 @@ public class setmealServiceImpl implements SetmealService {
                 throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
             }
             
-            // TODO This
-            // 判断当前套餐里是否有关联的的菜品
-//            List<Long> dishsBySetMealIds = setmealDishMapper.getDishsBySetMealIds(ids);
-//            if (!dishsBySetMealIds.isEmpty() && dishsBySetMealIds.size() > 0){
-//                throw new DeletionNotAllowedException(MessageConstant.SETMEAL)
-//            }
+            
+            
+            
+            setmealMapper.deleteByIds(ids);
+            setmealDishMapper.deleteBySetmealIds(ids);
             
         });
-        // 删除套餐内菜品数据
         
         
     }
