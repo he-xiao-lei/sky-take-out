@@ -21,6 +21,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -117,7 +118,16 @@ public class setmealServiceImpl implements SetmealService {
         BeanUtils.copyProperties(setmealDTO, setmeal);
         // 修改套餐基本表
         setmealMapper.update(setmeal);
-        // TODO 基本属性已经修改完成，但是菜品数据还没有完成
-//        setmealDishMapper.
+        
+        // 先删除所有菜品
+        setmealDishMapper.deleteBySetmealIds(Collections.singletonList(setmeal.getId()));
+        // 所有菜品
+        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
+        // 重新绑定菜品于套餐
+        Long setmealId = setmeal.getId();
+        setmealDishes.forEach(setmealDish -> {
+            setmealDish.setSetmealId(setmealId);
+        });
+        setmealDishMapper.insertBatch(setmealDishes);
     }
 }
