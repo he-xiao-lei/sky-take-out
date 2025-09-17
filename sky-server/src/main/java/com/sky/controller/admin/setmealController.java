@@ -24,7 +24,7 @@ public class setmealController {
     
     @GetMapping("/{id}")
     @ApiOperation(value = "根据id查询套餐")
-    public Result<SetmealVO> getSetMealById(@PathVariable Integer id) {
+    public Result<SetmealVO> getSetMealById(@PathVariable Long id) {
         SetmealVO setmealVO = setMealService.getSetMealById(id);
         log.info("套餐id为{}的信息{}", id, setmealVO);
         return Result.success(setmealVO);

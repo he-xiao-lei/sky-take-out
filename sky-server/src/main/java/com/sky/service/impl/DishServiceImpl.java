@@ -68,7 +68,7 @@ public class DishServiceImpl implements DishService {
     }
     
     @Override
-    public void deleteById(List<Long> ids) {
+    public void deleteByIds(List<Long> ids) {
         ids.forEach(id->{
             Dish dish = dishMapper.getById(id);
             // 判断菜品是否存在起售中

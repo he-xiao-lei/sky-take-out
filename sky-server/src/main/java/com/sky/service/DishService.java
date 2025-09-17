@@ -17,7 +17,7 @@ public interface DishService {
      * 菜品批量删除
      * @param ids
      */
-    void deleteById(List<Long> ids);
+    void deleteByIds(List<Long> ids);
     
     DishVO getDishWithFlavorById(Long id);
     

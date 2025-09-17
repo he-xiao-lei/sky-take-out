@@ -14,7 +14,7 @@ public interface SetmealService {
     PageResult queryPages(SetmealPageQueryDTO setmealPageQueryDTO);
     
     void startOrStop(Integer status, Long id);
-    SetmealVO getSetMealById(Integer id);
+    SetmealVO getSetMealById(Long id);
     
     void deleteByIds(List<Long> ids);
     
