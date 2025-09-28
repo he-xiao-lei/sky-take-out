@@ -133,7 +133,6 @@ public class DishServiceImpl implements DishService {
     
     @Override
     public List<DishVO> getDishByCategoryId(Integer categoryId) {
-        
         return dishMapper.getByCategoryId(categoryId);
     }
     /**

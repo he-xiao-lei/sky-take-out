@@ -46,6 +46,5 @@ public interface DishMapper {
     
     List<DishVO> getByCategoryId(Integer categoryId);
     
-    @Select("select * from category where status = 1 and category.id = #{dish.categoryId}")
     List<Dish> list(Dish dish);
 }
