@@ -58,7 +58,7 @@
             </if>
         </where>
     </select>
-    <select id="list" parameterType="SetmealVO" resultType="SetmealVO">
+    <select id="list" parameterType="com.sky.vo.SetmealVO" resultType="com.sky.vo.SetmealVO">
         select * from setmeal
         <where>
             <if test="name != null">
