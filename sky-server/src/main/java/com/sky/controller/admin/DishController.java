@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 菜品管理
@@ -30,12 +31,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DishController {
     public final DishService dishService;
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String,Object> redisTemplate;
     
     @PostMapping
     @ApiOperation(value = "新增菜品")
     public Result save(@RequestBody DishDTO dishDTO) {
         log.info("新增菜品{}", dishDTO);
+        // 清除缓存
+        String key = "dish_" + dishDTO.getCategoryId();
+        deleteCache(key);
+        
+        
         dishService.saveWithFlavor(dishDTO);
         return Result.success();
     }
@@ -56,6 +62,8 @@ public class DishController {
     @Transactional
     public Result deleteById(@RequestParam List<Long> ids) {
         log.info("菜品批量删除{}", ids);
+        // 将所有菜品数据缓存清除,所有以dish_开头的key
+        deleteCache("dish_*");
         dishService.deleteByIds(ids);
         return Result.success();
     }
@@ -72,7 +80,8 @@ public class DishController {
     @ApiOperation(value = "菜品修改")
     public Result update(@RequestBody DishDTO dishDTO) {
         dishService.updateWithFlavor(dishDTO);
-        
+        // 将所有菜品数据缓存清除,所有以dish_开头的key
+        deleteCache("dish_*");
         return Result.success();
     }
     
@@ -90,6 +99,13 @@ public class DishController {
     public Result updateStatus(@PathVariable Integer status, @RequestParam Long id) {
         log.info("菜品状态修改,状态为{},id为{}", status, id);
         dishService.updateStatus(status, id);
+        // 将所有菜品数据缓存清除,所有以dish_开头的key
+        deleteCache("dish_*");
         return Result.success();
+    }
+    
+    private void deleteCache(String pattern) {
+        Set<String> keys = redisTemplate.keys(pattern);
+        redisTemplate.delete(keys);
     }
 }
