@@ -18,4 +18,6 @@ public interface ShoppingCartMapper {
     @Insert("insert into shopping_cart(name, image, user_id, dish_id, setmeal_id, dish_flavor, amount, create_time) VALUE " +
             "(#{name},#{image},#{userId},#{dishId},#{setmealId},#{dishFlavor},#{amount},#{createTime})")
     void insert(ShoppingCart shoppingCart);
+    @Select("select * from shopping_cart")
+    List<ShoppingCart> listAll();
 }

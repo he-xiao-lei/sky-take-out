@@ -8,7 +8,7 @@ import com.sky.entity.ShoppingCart;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.mapper.ShoppingCartMapper;
-import com.sky.service.ShopingCardService;
+import com.sky.service.shoppingCartService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -20,7 +20,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ShopingCardServiceImpl implements ShopingCardService {
+public class shoppingCartServiceImpl implements shoppingCartService {
     private final ShoppingCartMapper shoppingCartMapper;
     private final DishMapper dishMapper;
     private final SetmealMapper setmealMapper;
@@ -30,7 +30,7 @@ public class ShopingCardServiceImpl implements ShopingCardService {
         BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
         //获取当前userId
         Long userId = BaseContext.getCurrentId();
-        shoppingCart.setId(userId);
+        shoppingCart.setUserId(userId);
         // 判断当前加入到购物车里的商品是否已经存在
         
         List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
@@ -64,6 +64,14 @@ public class ShopingCardServiceImpl implements ShopingCardService {
             // 插入数据
             shoppingCartMapper.insert(shoppingCart);
         }
+        
+    }
+    
+    @Override
+    public List<ShoppingCart> list() {
+        
+        
+        return shoppingCartMapper.listAll();
         
     }
     
