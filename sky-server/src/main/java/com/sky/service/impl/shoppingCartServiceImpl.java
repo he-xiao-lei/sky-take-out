@@ -8,10 +8,12 @@ import com.sky.entity.ShoppingCart;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.mapper.ShoppingCartMapper;
+import com.sky.mapper.UserMapper;
 import com.sky.service.shoppingCartService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +26,8 @@ public class shoppingCartServiceImpl implements shoppingCartService {
     private final ShoppingCartMapper shoppingCartMapper;
     private final DishMapper dishMapper;
     private final SetmealMapper setmealMapper;
+    private final UserMapper userMapper;
+    
     @Override
     public void add(ShoppingCartDTO shoppingCartDTO) {
         ShoppingCart shoppingCart = new ShoppingCart();
@@ -69,9 +73,35 @@ public class shoppingCartServiceImpl implements shoppingCartService {
     
     @Override
     public List<ShoppingCart> list() {
-        
-        
         return shoppingCartMapper.listAll();
+        
+    }
+    
+    @Override
+    public void clean() {
+        shoppingCartMapper.clean();
+    }
+    
+    @Override
+    public void sub(ShoppingCartDTO shoppingCartDTO) {
+        ShoppingCart shoppingCart = new ShoppingCart();
+        BeanUtils.copyProperties(shoppingCartDTO,shoppingCart);
+        Long userId = BaseContext.getCurrentId();
+        shoppingCart.setUserId(userId);
+        
+        List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
+        
+        if(list!=null && list.size() > 0){
+            ShoppingCart cart = list.get(0);
+            int number = cart.getNumber() - 1;
+            if (number==0){
+                    shoppingCartMapper.deleteById(cart);
+            }
+            
+            cart.setNumber(number);
+            shoppingCartMapper.update(cart);
+        }
+        
         
     }
     

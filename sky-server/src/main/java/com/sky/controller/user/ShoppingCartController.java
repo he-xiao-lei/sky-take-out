@@ -8,6 +8,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,5 +40,27 @@ public class ShoppingCartController {
         List<ShoppingCart> list = shoppingCartService.list();
         return Result.success(list);
     }
+    
+    /**
+     * 清空购物车
+     * @return
+     */
+    @DeleteMapping("/clean")
+    @ApiOperation("清空购物车")
+    public Result clean(){
+        shoppingCartService.clean();
+        return Result.success();
+    }
+    /**
+     * 删除单个菜品
+     */
+    @PostMapping("/sub")
+    @ApiOperation("删除单个菜品")
+    public Result sub(@RequestBody ShoppingCartDTO shoppingCartDTO){
+        log.info("删除菜品{}",shoppingCartDTO);
+        shoppingCartService.sub(shoppingCartDTO);
+        return Result.success();
+    }
+    
     
 }
