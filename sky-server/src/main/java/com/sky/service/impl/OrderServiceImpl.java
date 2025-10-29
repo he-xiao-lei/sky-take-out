@@ -3,6 +3,7 @@ package com.sky.service.impl;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.OrdersSubmitDTO;
+import com.sky.entity.AddressBook;
 import com.sky.entity.Orders;
 import com.sky.entity.ShoppingCart;
 import com.sky.exception.AddressBookBusinessException;
@@ -14,9 +15,11 @@ import com.sky.mapper.ShoppingCartMapper;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderSubmitVO;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.bridge.Message;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +47,33 @@ public class OrderServiceImpl implements OrderService {
         Orders orders = new Orders();
         
         BeanUtils.copyProperties(ordersSubmitDTO,orders);
+        
+        orders.setOrderTime(LocalDateTime.now());
+        // 未支付
+        orders.setPayStatus(Orders.UN_PAID);
+        // 代付款
+        orders.setStatus(Orders.PENDING_PAYMENT);
+        //当前时间的时间戳作为订单号
+        Random random = new Random();
+        String s = String.valueOf(random.nextInt(1, 1000));
+        orders.setNumber(System.currentTimeMillis() + s);
+        //手机号
+        // 通过地址簿查出手机号
+        AddressBook addressBook = addressBookMapper.getById(orders.getAddressBookId());
+        String phone = addressBook.getPhone();
+        orders.setPhone(phone);
+        // 收货人
+        String consignee = addressBook.getConsignee();
+        orders.setConsignee(consignee);
+        
+        
+        // 设置操作的用户的id
+        orders.setUserId(userId);
+        
+        
+        // 执行Mapper文件插入
+        orderMapper.insert(orders);
+        
         //向订单详细表插入多条数据
         
         //清空购物车
