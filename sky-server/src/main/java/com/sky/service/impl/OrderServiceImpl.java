@@ -30,6 +30,7 @@ public class OrderServiceImpl implements OrderService {
         
         // 处理业务异常 1. 收货地址为空 2. 购物车数据为空
         if(addressBookMapper.getById(ordersSubmitDTO.getAddressBookId()) == null)
+            // 抛出业务异常
             throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);
         
         ShoppingCart cart = new ShoppingCart();
@@ -37,6 +38,7 @@ public class OrderServiceImpl implements OrderService {
         cart.setUserId(userId);
         
         if(shoppingCartMapper.list(cart) == null && shoppingCartMapper.list(cart).size() > 0)
+            // 抛出业务异常
             throw new ShoppingCartBusinessException(MessageConstant.SHOPPING_CART_IS_NULL);
         // 向订单表插入一条数据
         Orders orders = new Orders();
