@@ -2,23 +2,24 @@ package com.sky.controller.admin;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Random;
-
+@Slf4j
 @RestController
-@RequestMapping("/picture")
+@RequestMapping
 @Api(tags = "返回随机照片")
 public class PictureController {
     
-    
-    @GetMapping("/random")
+    @GetMapping("/picture/random")
     @ApiOperation("返回照片")
     public ResponseEntity<Resource> randomPicture(){
         Resource[] resources = getImageResourceFromClasspath();
@@ -26,6 +27,7 @@ public class PictureController {
         Random random = new Random();
         
         Resource resource = resources[random.nextInt(resources.length)];
+        log.info("照片{}",resource.getFilename());
         MediaType mediaType = getMediaType(resource.getFilename());
         return ResponseEntity.ok()
                     .contentType(mediaType)
