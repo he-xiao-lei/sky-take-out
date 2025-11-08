@@ -27,7 +27,6 @@ public class shopController {
     public Result setStatus(@PathVariable String status) {
         
         log.info("设置店铺营业状态为{}", status.equals("1") ? "营业中" : "打样中");
-//        log.info("设置店铺营业状态为{}", status.equals(1) ? "营业中" : "打样中");
         redisTemplate.opsForValue().set(KEY, status);
         
         return Result.success();

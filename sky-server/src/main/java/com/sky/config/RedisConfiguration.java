@@ -34,13 +34,8 @@ public class RedisConfiguration {
         Jackson2JsonRedisSerializer<Object> objectJackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<Object>(Object.class);
 
         // 配置ObjectMapper以支持类型信息
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance,ObjectMapper.DefaultTyping.NON_FINAL);
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.disable(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS);
-        objectJackson2JsonRedisSerializer.setObjectMapper(objectMapper);
-
+        mapper(objectJackson2JsonRedisSerializer);
+        
         // 设置键的序列化器
         redisTemplate.setValueSerializer(objectJackson2JsonRedisSerializer);
         redisTemplate.setHashValueSerializer(objectJackson2JsonRedisSerializer);
@@ -52,15 +47,19 @@ public class RedisConfiguration {
         
     }
     
-    @Bean//配置SpringCache缓存管理器
-    public RedisCacheConfiguration redisCacheConfiguration(){
-        Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
+    private void mapper(Jackson2JsonRedisSerializer<Object> objectJackson2JsonRedisSerializer) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance,ObjectMapper.DefaultTyping.NON_FINAL);
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS);
-        serializer.setObjectMapper(objectMapper);
+        objectJackson2JsonRedisSerializer.setObjectMapper(objectMapper);
+    }
+    
+    @Bean//配置SpringCache缓存管理器
+    public RedisCacheConfiguration redisCacheConfiguration(){
+        Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
+        mapper(serializer);
         return RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
