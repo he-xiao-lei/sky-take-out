@@ -1,6 +1,7 @@
 package com.sky.controller.user;
 
 import com.sky.dto.OrdersSubmitDTO;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderSubmitVO;
@@ -8,10 +9,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 @Slf4j
 @RestController("userOrderController")
 @RequestMapping("/user/order")
@@ -30,5 +29,12 @@ public class OrderController {
         log.info("订单信息{}",ordersSubmitDTO);
         OrderSubmitVO orderSubmitVO = orderService.submitOrder(ordersSubmitDTO);
         return Result.success(orderSubmitVO);
+    }
+    @GetMapping("/historyOrders")
+    @ApiOperation("查看历史订单")
+    public Result<PageResult> page(int page,int pageSize,Integer status){
+            PageResult pageResult =orderService.pageQuery4User(page,pageSize,status);
+    
+        return Result.success(pageResult);
     }
 }
