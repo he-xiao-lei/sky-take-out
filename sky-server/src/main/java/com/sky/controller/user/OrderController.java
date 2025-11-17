@@ -43,6 +43,7 @@ public class OrderController {
     public Result<OrderVO> details(@PathVariable("id") Integer id){
         OrderVO orderVo=orderService.details(id);
         
+        return Result.success(orderVo);
         
     }
 }
