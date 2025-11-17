@@ -34,7 +34,7 @@ public class OrderController {
     @ApiOperation("查看历史订单")
     public Result<PageResult> page(int page,int pageSize,Integer status){
             PageResult pageResult =orderService.pageQuery4User(page,pageSize,status);
-    
+            return Result.success(pageResult);
     
     }
 }
