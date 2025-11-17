@@ -30,11 +30,4 @@ public class OrderController {
         OrderSubmitVO orderSubmitVO = orderService.submitOrder(ordersSubmitDTO);
         return Result.success(orderSubmitVO);
     }
-    @GetMapping("/historyOrders")
-    @ApiOperation("查看历史订单")
-    public Result<PageResult> page(int page,int pageSize,Integer status){
-            PageResult pageResult =orderService.pageQuery4User(page,pageSize,status);
-    
-        return Result.success(pageResult);
-    }
 }
