@@ -5,6 +5,7 @@ import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -36,5 +37,12 @@ public class OrderController {
             PageResult pageResult =orderService.pageQuery4User(page,pageSize,status);
             return Result.success(pageResult);
     
+    }
+    @GetMapping("/orderDetail/{id}")
+    @ApiOperation("查询订单详细")
+    public Result<OrderVO> details(@PathVariable("id") Integer id){
+        OrderVO orderVo=orderService.details(id);
+        
+        
     }
 }

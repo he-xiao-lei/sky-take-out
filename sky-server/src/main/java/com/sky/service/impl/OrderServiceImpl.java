@@ -190,4 +190,21 @@ public class OrderServiceImpl implements OrderService {
         }
         return new PageResult(page.getTotal(), list);
     }
+    
+    @Override
+    public OrderVO details(Integer id) {
+        // 根据id查询订单
+        Orders orders = orderMapper.getById(id);
+        // 查询该订单对应菜品/套餐明细
+        List<OrderDetail> orderdetails = orderDetailMapper.getByOrderId(orders.getId());
+        
+        
+        // 将该订单及其详情封装到OrderVO并且返回
+        OrderVO orderVO = new OrderVO();
+        BeanUtils.copyProperties(orders, orderVO);
+        orderVO.setOrderDetailList(orderdetails);
+        
+        
+        return orderVO;
+    }
 }
