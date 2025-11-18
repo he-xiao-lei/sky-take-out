@@ -71,6 +71,7 @@ public class OrderServiceImpl implements OrderService {
         //手机号
         // 通过地址簿查出手机号
         AddressBook addressBook = addressBookMapper.getById(orders.getAddressBookId());
+        orders.setAddress(addressBook.getDetail());
         String phone = addressBook.getPhone();
         orders.setPhone(phone);
         // 收货人

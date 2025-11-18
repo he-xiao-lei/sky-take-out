@@ -15,7 +15,7 @@ import java.util.Date;
 @Slf4j
 public class MyTask {
 
-    @Scheduled(cron = "0/2 * * * * ?")
+//    @Scheduled(cron = "0/2 * * * * ?")
     public void taskDemo(){
         log.info("定时任务执行了{}",new Date());
     }
