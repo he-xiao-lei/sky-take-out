@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -238,4 +239,27 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.update(orders);
         
     }
+    
+    @Override
+    public void repetition(Long id) {
+        // 查询当前用户id
+        Long userId = BaseContext.getCurrentId();
+        // 根据订单id查询当前订单详情
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
+        
+        // 将订单对象转换为购物车对象
+        List<ShoppingCart> shoppingCartList = orderDetailList.stream().map(
+                orderDetail -> {
+                    ShoppingCart shoppingCart = new ShoppingCart();
+                    // 将原订单详情里面的菜品信息重新复制到购物车对象中
+                    BeanUtils.copyProperties(orderDetail, shoppingCart, "id");
+                    shoppingCart.setUserId(userId);
+                    shoppingCart.setCreateTime(LocalDateTime.now());
+                    return shoppingCart;
+                }
+        ).collect(Collectors.toList());
+        // 将购物车对象批量添加到数据库中
+        shoppingCartMapper.insertBatch(shoppingCartList);
+    }
+    
 }
