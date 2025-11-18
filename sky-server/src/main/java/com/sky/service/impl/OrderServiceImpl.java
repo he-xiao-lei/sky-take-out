@@ -20,6 +20,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final OrderDetailMapper orderDetailMapper;
@@ -207,5 +209,33 @@ public class OrderServiceImpl implements OrderService {
         
         
         return orderVO;
+    }
+    
+    @Override
+    public void cancelById(Integer id) {
+        // 根据id查询订单
+        Orders orderDb = orderMapper.getById(id);
+        
+        // 检验订单是否存在
+        if (orderDb == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+        //订单状态1 代付款 2待接单 3已接单 4派送中 5已完成 6已
+        if (orderDb.getStatus() > 2) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        Orders orders = new Orders();
+        orders.setId(orderDb.getId());
+        
+        //订单处于待接单状态取消，需要进行退款
+        if (orderDb.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+            log.warn("已退款");
+            orders.setPayStatus(Orders.REFUND);
+        }
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelReason("用户取消");
+        orders.setCancelTime(LocalDateTime.now());
+        orderMapper.update(orders);
+        
     }
 }
