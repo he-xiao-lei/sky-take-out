@@ -2,7 +2,6 @@ package com.sky.controller.admin;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.http.MediaType;
@@ -13,9 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
 import java.util.Random;
-import java.util.function.IntFunction;
 
-@Slf4j
 @RestController
 @RequestMapping
 @Api(tags = "返回随机照片")
@@ -30,15 +27,17 @@ public class PictureController {
         Random random = new Random();
         
         Resource resource = resources[random.nextInt(resources.length)];
-        log.info("返回照片{}", resource.getDescription());
         MediaType mediaType = getMediaType(resource.getFilename());
         return ResponseEntity.ok()
                 .contentType(mediaType)
                 .body(resource);
     }
     
-    
-    private Resource[] getImageResourceFromClasspath() {
+    /**
+     * 根据类路径获取照片
+     * @return 返回资源集合
+     */
+    private Resource[] getImageResourceFromClasspath(){
         PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
         try {
             Resource[] resources = patternResolver.getResources("classpath:picture/*.{jpg,jpeg,png,bmp}");
@@ -52,20 +51,21 @@ public class PictureController {
         }
     }
     
-    public MediaType getMediaType(String filename) {
+    /**
+     * 根据文件后缀名判断照片类型
+     * @param filename 获取文件后缀名
+     * @return 返回照片类型
+     */
+    private MediaType getMediaType(String filename) {
+        if (filename == null) return MediaType.IMAGE_JPEG;
         
-        String suffix = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
-        
-        switch (suffix) {
-            case "jpg":
-            case "jpeg":
-                return MediaType.IMAGE_JPEG;
-            case "png":
-                return MediaType.IMAGE_PNG;
-            case "gif":
-                return MediaType.IMAGE_GIF;
-            default:
-                return MediaType.IMAGE_JPEG;
+        String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+        switch (extension) {
+            case "jpg": case "jpeg": return MediaType.IMAGE_JPEG;
+            case "png": return MediaType.IMAGE_PNG;
+            case "gif": return MediaType.IMAGE_GIF;
+            case "bmp": return MediaType.valueOf("image/bmp");
+            default: return MediaType.IMAGE_JPEG;
         }
     }
 }
