@@ -1,5 +1,6 @@
 package com.sky.controller.user;
 
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
@@ -59,5 +60,13 @@ public class OrderController {
     public Result repetition(@PathVariable("id") Long id){
         orderService.repetition(id);
         return Result.success();
+    }
+    @GetMapping("/conditionSearch")
+    @ApiOperation("订单搜索")
+    public Result<PageResult> conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO){
+        log.info("搜索订单{}",ordersPageQueryDTO);
+        PageResult pageResult =orderService.conditionSearch(ordersPageQueryDTO);
+        
+        return Result.success(pageResult);
     }
 }
