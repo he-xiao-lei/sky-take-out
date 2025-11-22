@@ -16,10 +16,7 @@ import com.sky.mapper.*;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.utils.WeChatPayUtil;
-import com.sky.vo.DishVO;
-import com.sky.vo.OrderPaymentVO;
-import com.sky.vo.OrderSubmitVO;
-import com.sky.vo.OrderVO;
+import com.sky.vo.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -273,6 +270,22 @@ public class OrderServiceImpl implements OrderService {
         // 部分订单状态,需要额外返回订单信息,将Orders转化为OrderVO
         List<OrderVO> orderVOList = getOrderList(page);
         return new PageResult(page.getTotal(), orderVOList);
+    }
+    
+    @Override
+    public OrderStatisticsVO getOrderStatistics() {
+        //根据状态查询出各个状态订单的数量
+        Integer toBeConfirmed =  orderMapper.countStatus(Orders.TO_BE_CONFIRMED);
+        Integer confirmed = orderMapper.countStatus(Orders.CONFIRMED);
+        Integer deliveryInProgress= orderMapper.countStatus(Orders.DELIVERY_IN_PROGRESS);
+        
+        // 将查询到的数量封状态OrderStatisticsVO
+        OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
+        orderStatisticsVO.setToBeConfirmed(toBeConfirmed);
+        orderStatisticsVO.setConfirmed(confirmed);
+        orderStatisticsVO.setDeliveryInProgress(deliveryInProgress);
+        
+        return orderStatisticsVO;
     }
     
     public List<OrderVO> getOrderList(Page<Orders> page) {
