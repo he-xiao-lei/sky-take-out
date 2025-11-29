@@ -31,6 +31,7 @@ public class OrderController {
     @GetMapping("/statistics")
     @ApiOperation("查询各个状态订单的数量")
     public Result<OrderStatisticsVO> statistics(){
-            orderService.getOrderStatistics();
+        OrderStatisticsVO orderStatistics = orderService.getOrderStatistics();
+        return Result.success(orderStatistics);
     }
 }
