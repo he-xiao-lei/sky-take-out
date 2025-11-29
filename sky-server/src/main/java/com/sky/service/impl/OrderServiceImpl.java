@@ -42,6 +42,7 @@ public class OrderServiceImpl implements OrderService {
     
     /**
      * 模拟微信支付返回数据
+     *
      * @param type 返回类型：success-成功，paid-已支付，error-错误
      */
     public static JSONObject mockWeChatPayResponse(String type) {
@@ -57,19 +58,19 @@ public class OrderServiceImpl implements OrderService {
                 jsonObject.put("package", "prepay_id=wx201410272009395522657A690389285100");
                 jsonObject.put("prepay_id", "wx201410272009395522657A690389285100");
                 break;
-                
+            
             case "paid":
                 // 订单已支付情况
                 jsonObject.put("code", "ORDERPAID");
                 jsonObject.put("message", "该订单已支付");
                 break;
-                
+            
             case "error":
                 // 支付错误情况
                 jsonObject.put("code", "FAIL");
                 jsonObject.put("message", "支付失败");
                 break;
-                
+            
             default:
                 jsonObject.put("code", "UNKNOWN");
                 jsonObject.put("message", "未知错误");
@@ -329,9 +330,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderStatisticsVO getOrderStatistics() {
         //根据状态查询出各个状态订单的数量
-        Integer toBeConfirmed =  orderMapper.countStatus(Orders.TO_BE_CONFIRMED);
+        Integer toBeConfirmed = orderMapper.countStatus(Orders.TO_BE_CONFIRMED);
         Integer confirmed = orderMapper.countStatus(Orders.CONFIRMED);
-        Integer deliveryInProgress= orderMapper.countStatus(Orders.DELIVERY_IN_PROGRESS);
+        Integer deliveryInProgress = orderMapper.countStatus(Orders.DELIVERY_IN_PROGRESS);
         
         // 将查询到的数量封状态OrderStatisticsVO
         OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
@@ -426,12 +427,12 @@ public class OrderServiceImpl implements OrderService {
         Orders ordersDB = orderMapper.getById(Math.toIntExact(ordersRejectionDTO.getId()));
         
         //订单只有存在且状态为2(待接单)才可以拒单
-        if(ordersDB == null || !ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+        if (ordersDB == null || !ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
         //支付状态
         Integer payStatus = ordersDB.getPayStatus();
-        if(payStatus.equals(Orders.PAID)) {
+        if (payStatus.equals(Orders.PAID)) {
             //用户已支付需要退款
             log.info("退款完成");
         }
@@ -450,7 +451,7 @@ public class OrderServiceImpl implements OrderService {
         Orders ordersDB = orderMapper.getById(Math.toIntExact(ordersCancelDTO.getId()));
         //支付状态
         Integer payStatus = ordersDB.getPayStatus();
-        if(payStatus.equals(Orders.PAID)) {
+        if (payStatus.equals(Orders.PAID)) {
             //用户已支付需要退款
             log.info("退款完成");
         }
@@ -465,9 +466,9 @@ public class OrderServiceImpl implements OrderService {
     
     @Override
     public void delivery(Long id) {
-        Orders ordersDB= orderMapper.getById(Math.toIntExact(id));
+        Orders ordersDB = orderMapper.getById(Math.toIntExact(id));
         
-        if(ordersDB == null || !ordersDB.getStatus().equals(Orders.CONFIRMED)){
+        if (ordersDB == null || !ordersDB.getStatus().equals(Orders.CONFIRMED)) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
         
@@ -475,6 +476,21 @@ public class OrderServiceImpl implements OrderService {
         Orders build = Orders.builder()
                 .id(id)
                 .status(Orders.DELIVERY_IN_PROGRESS)
+                .build();
+        orderMapper.update(build);
+    }
+    
+    @Override
+    public void complete(Integer id) {
+        Orders ordersDB = orderMapper.getById(id);
+        
+        if (ordersDB == null || !ordersDB.getStatus().equals(Orders.DELIVERY_IN_PROGRESS)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        
+        Orders build = Orders.builder()
+                .id(ordersDB.getId())
+                .status(Orders.COMPLETED)
                 .build();
         orderMapper.update(build);
     }
