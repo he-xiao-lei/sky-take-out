@@ -5,10 +5,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
-import com.sky.dto.OrdersConfirmDTO;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.entity.*;
 import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.OrderBusinessException;
@@ -419,6 +416,30 @@ public class OrderServiceImpl implements OrderService {
                 .checkoutTime(LocalDateTime.now())
                 .build();
         
+        orderMapper.update(orders);
+    }
+    
+    @Override
+    public void rejection(OrdersRejectionDTO ordersRejectionDTO) {
+        //根据id查询订单
+        Orders ordersDB = orderMapper.getById(Math.toIntExact(ordersRejectionDTO.getId()));
+        
+        //订单只有存在且状态为2(待接单)才可以拒单
+        if(ordersDB == null || ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        //支付状态
+        Integer payStatus = ordersDB.getPayStatus();
+        if(payStatus.equals(Orders.PAID)) {
+            //用户已支付需要退款
+            log.info("退款完成");
+        }
+        //拒单需要退款，根据订单id更新订单状态，拒单原因，取消时间
+        Orders orders = new Orders();
+        orders.setId(ordersRejectionDTO.getId());
+        orders.setStatus(Orders.CANCELLED);
+        orders.setRejectionReason(ordersRejectionDTO.getRejectionReason());
+        orders.setCancelTime(LocalDateTime.now());
         orderMapper.update(orders);
     }
 }
