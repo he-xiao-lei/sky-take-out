@@ -42,6 +42,44 @@ public class OrderServiceImpl implements OrderService {
     private final WeChatPayUtil weChatPayUtil;
     private final UserMapper userMapper;
     
+    /**
+     * 模拟微信支付返回数据
+     * @param type 返回类型：success-成功，paid-已支付，error-错误
+     */
+    public static JSONObject mockWeChatPayResponse(String type) {
+        JSONObject jsonObject = new JSONObject();
+        
+        switch (type) {
+            case "success":
+                // 支付成功情况
+                jsonObject.put("nonceStr", "5K8264ILTKCH16CQ2502SI8ZNMTM67VS");
+                jsonObject.put("paySign", "C380BEC2BFD727A4B6845133519F3AD6");
+                jsonObject.put("timeStamp", "1414561699");
+                jsonObject.put("signType", "RSA");
+                jsonObject.put("package", "prepay_id=wx201410272009395522657A690389285100");
+                jsonObject.put("prepay_id", "wx201410272009395522657A690389285100");
+                break;
+                
+            case "paid":
+                // 订单已支付情况
+                jsonObject.put("code", "ORDERPAID");
+                jsonObject.put("message", "该订单已支付");
+                break;
+                
+            case "error":
+                // 支付错误情况
+                jsonObject.put("code", "FAIL");
+                jsonObject.put("message", "支付失败");
+                break;
+                
+            default:
+                jsonObject.put("code", "UNKNOWN");
+                jsonObject.put("message", "未知错误");
+        }
+        
+        return jsonObject;
+    }
+    
     @Override
     @Transactional
     public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) {
@@ -66,9 +104,11 @@ public class OrderServiceImpl implements OrderService {
         
         orders.setOrderTime(LocalDateTime.now());
         // 未支付
-        orders.setPayStatus(Orders.UN_PAID);
+//        orders.setPayStatus(Orders.UN_PAID);
+        orders.setPayStatus(Orders.PAID);
         // 代付款
-        orders.setStatus(Orders.PENDING_PAYMENT);
+//        orders.setStatus(Orders.PENDING_PAYMENT);
+        orders.setStatus(Orders.TO_BE_CONFIRMED);
         //当前时间的时间戳作为订单号
         orders.setNumber(String.valueOf(System.currentTimeMillis()));
         //手机号
@@ -120,26 +160,39 @@ public class OrderServiceImpl implements OrderService {
      * @param ordersPaymentDTO
      * @return
      */
+    /**
+     * 订单支付
+     *
+     * @param ordersPaymentDTO
+     * @return
+     */
     public OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
         // 当前登录用户id
         Long userId = BaseContext.getCurrentId();
         User user = userMapper.getById(userId);
         
-        //调用微信支付接口，生成预支付交易单
+        // 在开发环境中模拟支付成功
+        // 如果需要真实支付，可以取消下面的注释并注释掉模拟代码
+        /*
         JSONObject jsonObject = weChatPayUtil.pay(
                 ordersPaymentDTO.getOrderNumber(), //商户订单号
                 new BigDecimal(0.01), //支付金额，单位 元
                 "苍穹外卖订单", //商品描述
                 user.getOpenid() //微信用户的openid
         );
-//        JSONObject jsonObject = new JSONObject();
-//        jsonObject.set
+        */
         
+        // 模拟支付成功
+        JSONObject jsonObject = mockWeChatPayResponse("success");
+        
+        // 检查是否订单已支付
         if (jsonObject.getString("code") != null && jsonObject.getString("code").equals("ORDERPAID")) {
             throw new OrderBusinessException("该订单已支付");
         }
         
+        // 转换为VO对象
         OrderPaymentVO vo = jsonObject.toJavaObject(OrderPaymentVO.class);
+        // 注意：需要手动设置packageStr字段，因为JSON中的字段名是package，而VO中的字段名是packageStr
         vo.setPackageStr(jsonObject.getString("package"));
         
         return vo;
@@ -332,4 +385,41 @@ public class OrderServiceImpl implements OrderService {
         //将该订单对应的所有菜品信息拼接到一起
         return String.join("", collect);
     }
+    
+    /**
+     * 将订单从待付款状态修改为已付款状态
+     * 同时更新订单状态为待接单，支付状态为已支付
+     *
+     * @param orderNumber 订单号
+     */
+    public void updatePendingOrderToPaid(String orderNumber) {
+        // 根据订单号查询订单
+        Orders ordersDB = orderMapper.getByNumber(orderNumber);
+        
+        // 检查订单是否存在
+        if (ordersDB == null) {
+            throw new OrderBusinessException("订单不存在");
+        }
+        
+        // 检查订单是否为待付款状态
+        if (!Orders.PENDING_PAYMENT.equals(ordersDB.getStatus())) {
+            throw new OrderBusinessException("订单不是待付款状态");
+        }
+        
+        // 检查支付状态是否为未支付
+        if (!Orders.UN_PAID.equals(ordersDB.getPayStatus())) {
+            throw new OrderBusinessException("订单已支付");
+        }
+        
+        // 更新订单状态为待接单，支付状态为已支付
+        Orders orders = Orders.builder()
+                .id(ordersDB.getId())
+                .status(Orders.TO_BE_CONFIRMED)  // 订单状态改为待接单
+                .payStatus(Orders.PAID)          // 支付状态改为已支付
+                .checkoutTime(LocalDateTime.now())
+                .build();
+        
+        orderMapper.update(orders);
+    }
 }
+

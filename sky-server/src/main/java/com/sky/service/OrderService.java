@@ -39,4 +39,5 @@ public interface OrderService {
     OrderStatisticsVO getOrderStatistics();
     
     void confirm(OrdersConfirmDTO ordersConfirmDTO);
+    void updatePendingOrderToPaid(String orderNumber);
 }
