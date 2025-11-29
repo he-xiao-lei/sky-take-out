@@ -39,4 +39,6 @@ public interface OrderService {
     void updatePendingOrderToPaid(String orderNumber);
     
     void rejection(OrdersRejectionDTO ordersRejectionDTO);
+    
+    void cancel(OrdersCancelDTO ordersCancelDTO);
 }
