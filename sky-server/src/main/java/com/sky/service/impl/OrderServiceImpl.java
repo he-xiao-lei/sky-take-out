@@ -132,6 +132,8 @@ public class OrderServiceImpl implements OrderService {
                 "苍穹外卖订单", //商品描述
                 user.getOpenid() //微信用户的openid
         );
+//        JSONObject jsonObject = new JSONObject();
+//        jsonObject.set
         
         if (jsonObject.getString("code") != null && jsonObject.getString("code").equals("ORDERPAID")) {
             throw new OrderBusinessException("该订单已支付");
@@ -291,12 +293,15 @@ public class OrderServiceImpl implements OrderService {
     
     @Override
     public void confirm(OrdersConfirmDTO ordersConfirmDTO) {
+        
         Orders build = Orders.builder()
                 .id(ordersConfirmDTO.getId())
                 .status(Orders.CONFIRMED)
                 .build();
         orderMapper.update(build);
+        
     }
+    
     
     public List<OrderVO> getOrderList(Page<Orders> page) {
         // 需要返回订单菜品信息，自定义OrderVO响应结果
