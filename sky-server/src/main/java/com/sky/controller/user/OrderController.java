@@ -41,6 +41,12 @@ public class OrderController {
             return Result.success(pageResult);
     
     }
+    @PutMapping("/payment")
+    @ApiOperation("支付部分")
+    public Result<OrderPaymentVO> payment(@RequestBody OrdersPaymentDTO ordersPaymentDTO) throws Exception {
+        OrderPaymentVO payment = orderService.payment(ordersPaymentDTO);
+        return Result.success(payment);
+    }
     @GetMapping("/orderDetail/{id}")
     @ApiOperation("查询订单详细")
     public Result<OrderVO> details(@PathVariable("id") Integer id){
