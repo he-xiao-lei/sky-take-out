@@ -17,6 +17,7 @@ import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.utils.HttpClientUtil;
 import com.sky.vo.*;
+import com.sky.websocket.WebSocketServer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -42,6 +43,7 @@ public class OrderServiceImpl implements OrderService {
     private final ShoppingCartMapper shoppingCartMapper;
 //    private final WeChatPayUtil weChatPayUtil;
     private final UserMapper userMapper;
+    private final WebSocketServer webSocketServer;
     @Value("${sky.shop.address}")
     private String shopAddress;
     @Value("${sky.shop.key}")
@@ -179,6 +181,7 @@ public class OrderServiceImpl implements OrderService {
         // 代付款
 //        orders.setStatus(Orders.PENDING_PAYMENT);
         orders.setStatus(Orders.TO_BE_CONFIRMED);
+        
         //当前时间的时间戳作为订单号
         orders.setNumber(String.valueOf(System.currentTimeMillis()));
         //手机号
@@ -195,7 +198,12 @@ public class OrderServiceImpl implements OrderService {
         // 设置操作的用户的id
         orders.setUserId(userId);
         
-        
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type",1);
+        jsonObject.put("orderId",orders.getId());
+        jsonObject.put("content","订单号"+orders.getNumber());
+        String jsonString = jsonObject.toJSONString();
+        webSocketServer.sendToAllClient(jsonString);
         // 执行Mapper文件插入
         orderMapper.insert(orders);
         //向订单详细表插入多条数据
