@@ -9,6 +9,7 @@ import com.sky.service.OrderService;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -22,51 +23,67 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
+    private final WebSocketServer webSocketServer;
+    
     /**
      * 用户下单
+     *
      * @param ordersSubmitDTO 前端传输过来的数据
      * @return 下单后的信息
      */
     @PostMapping("/submit")
     @ApiOperation("用户下单")
-    public Result<OrderSubmitVO> submit(@RequestBody OrdersSubmitDTO ordersSubmitDTO){
-        log.info("订单信息{}",ordersSubmitDTO);
+    public Result<OrderSubmitVO> submit(@RequestBody OrdersSubmitDTO ordersSubmitDTO) {
+        log.info("订单信息{}", ordersSubmitDTO);
         OrderSubmitVO orderSubmitVO = orderService.submitOrder(ordersSubmitDTO);
         return Result.success(orderSubmitVO);
     }
+    
     @GetMapping("/historyOrders")
     @ApiOperation("查看历史订单")
-    public Result<PageResult> page(int page,int pageSize,Integer status){
-            PageResult pageResult =orderService.pageQuery4User(page,pageSize,status);
-            return Result.success(pageResult);
-    
+    public Result<PageResult> page(int page, int pageSize, Integer status) {
+        PageResult pageResult = orderService.pageQuery4User(page, pageSize, status);
+        return Result.success(pageResult);
+        
     }
+    
     @PutMapping("/payment")
     @ApiOperation("支付部分")
     public Result<OrderPaymentVO> payment(@RequestBody OrdersPaymentDTO ordersPaymentDTO) throws Exception {
         OrderPaymentVO payment = orderService.payment(ordersPaymentDTO);
         return Result.success(payment);
     }
+    
     @GetMapping("/orderDetail/{id}")
     @ApiOperation("查询订单详细")
-    public Result<OrderVO> details(@PathVariable("id") Integer id){
-        OrderVO orderVo=orderService.details(id);
+    public Result<OrderVO> details(@PathVariable("id") Integer id) {
+        OrderVO orderVo = orderService.details(id);
         return Result.success(orderVo);
     }
     
     @PutMapping("/cancel/{id}")
     @ApiOperation("取消订单")
-    public Result<OrderVO> cancel(@PathVariable("id") Integer id){
+    public Result<OrderVO> cancel(@PathVariable("id") Integer id) {
         orderService.cancelById(id);
         return Result.success();
     }
+    
     /**
      * 再来一单
      */
     @PostMapping("/repetition/{id}")
     @ApiOperation("再来一单")
-    public Result repetition(@PathVariable("id") Long id){
+    public Result repetition(@PathVariable("id") Long id) {
         orderService.repetition(id);
+        return Result.success();
+    }
+    
+    @GetMapping("/reminder/{id}")
+    @ApiOperation("催单")
+    public Result reminder(@PathVariable(value = "id") Integer id) {
+        orderService.reminder(id);
+        
+        
         return Result.success();
     }
     
