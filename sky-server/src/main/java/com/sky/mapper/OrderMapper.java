@@ -6,6 +6,8 @@ import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.Map;
+
 @Mapper
 public interface OrderMapper {
     /**
@@ -31,4 +33,6 @@ public interface OrderMapper {
     Orders getById(Integer id);
     @Select("select count(id) from orders where status = #{status}")
     Integer countStatus(Integer toBeConfirmed);
+    
+    Double sumByMap(Map map);
 }
