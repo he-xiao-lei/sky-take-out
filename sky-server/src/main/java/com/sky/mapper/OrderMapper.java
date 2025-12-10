@@ -35,4 +35,6 @@ public interface OrderMapper {
     Integer countStatus(Integer toBeConfirmed);
     
     Double sumByMap(Map map);
+    
+    Integer countOrders(Map map);
 }

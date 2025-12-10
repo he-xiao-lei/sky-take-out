@@ -1,10 +1,13 @@
 package com.sky.service.impl;
 
+import com.sky.constant.MessageConstant;
 import com.sky.entity.Orders;
+import com.sky.exception.OrderBusinessException;
 import com.sky.mapper.OrderMapper;
 //import com.sky.mapper.ReportMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
+import com.sky.vo.OrderReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import lombok.RequiredArgsConstructor;
@@ -83,10 +86,10 @@ public class ReportServiceImpl implements ReportService {
             LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
             //先查询出总用户数量
             Map map = new HashMap();
-            map.put("end",endTime);
+            map.put("end", endTime);
             Integer totalUser = userMapper.countByMap(map);
             //再查询出新增用户数量
-            map.put("begin",startTime);
+            map.put("begin", startTime);
             Integer newUser = userMapper.countByMap(map);
             newUserList.add(newUser);
             totalUserList.add(totalUser);
@@ -97,6 +100,49 @@ public class ReportServiceImpl implements ReportService {
                 .dateList(StringUtils.join(dateList, ","))
                 .newUserList(StringUtils.join(newUserList, ","))
                 .totalUserList(StringUtils.join(totalUserList, ","))
+                .build();
+    }
+    
+    
+    @Override
+    public OrderReportVO getOrderReportVOResult(LocalDate begin, LocalDate end) {
+        List<LocalDate> dateList = new ArrayList<>();
+        
+        dateList.add(begin);
+        while (!begin.equals(end)) {
+            // 计算日期
+            begin = begin.plusDays(1);
+            dateList.add(begin);
+        }
+        List<Integer> validOrderCountList = new ArrayList<>();
+        List<Integer> orderCountList = new ArrayList<>();
+        for (LocalDate date : dateList) {
+            LocalDateTime startTime = LocalDateTime.of(date, LocalTime.MIN);
+            LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
+            Map map = new HashMap();
+            map.put("begin", startTime);
+            map.put("end", endTime);
+            map.put("status", Orders.COMPLETED);
+            Integer dayValidOrder = orderMapper.countOrders(map);
+            validOrderCountList.add(dayValidOrder);
+            map = new HashMap();
+            map.put("begin", startTime);
+            map.put("end", endTime);
+            Integer dayOrderCount = orderMapper.countOrders(map);
+            orderCountList.add(dayOrderCount);
+        }
+        Integer validOrderCount = validOrderCountList.stream().reduce(Integer::sum).get();
+        Integer totalOrderCount = orderCountList.stream().reduce(Integer::sum).get();
+        
+        Double completionRate = (validOrderCount.doubleValue() / totalOrderCount);
+        
+        return OrderReportVO.builder()
+                .dateList(StringUtils.join(dateList, ","))
+                .validOrderCountList(StringUtils.join(validOrderCountList, ","))
+                .validOrderCount(validOrderCount)
+                .totalOrderCount(totalOrderCount)
+                .orderCountList(StringUtils.join(orderCountList,","))
+                .orderCompletionRate(completionRate)
                 .build();
     }
 }
