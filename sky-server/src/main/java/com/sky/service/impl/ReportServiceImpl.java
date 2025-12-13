@@ -1,13 +1,16 @@
 package com.sky.service.impl;
 
 import com.sky.constant.MessageConstant;
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.entity.Orders;
 import com.sky.exception.OrderBusinessException;
+import com.sky.mapper.DishMapper;
 import com.sky.mapper.OrderMapper;
 //import com.sky.mapper.ReportMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
 import com.sky.vo.OrderReportVO;
+import com.sky.vo.SalesTop10ReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -26,6 +30,7 @@ import java.util.*;
 public class ReportServiceImpl implements ReportService {
     private final UserMapper userMapper;
     private final OrderMapper orderMapper;
+    private final DishMapper dishMapper;
     
     @Override
     public TurnoverReportVO getturnoverStatistics(LocalDate begin, LocalDate end) {
@@ -141,8 +146,27 @@ public class ReportServiceImpl implements ReportService {
                 .validOrderCountList(StringUtils.join(validOrderCountList, ","))
                 .validOrderCount(validOrderCount)
                 .totalOrderCount(totalOrderCount)
-                .orderCountList(StringUtils.join(orderCountList,","))
+                .orderCountList(StringUtils.join(orderCountList, ","))
                 .orderCompletionRate(completionRate)
+                .build();
+    }
+    
+    @Override
+    public SalesTop10ReportVO getSalesTop10(LocalDate begin, LocalDate end) {
+        
+            LocalDateTime startTime = LocalDateTime.of(begin, LocalTime.MIN);
+            LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
+            List<GoodsSalesDTO> salesTop10 = orderMapper.getSalesTop10(startTime, endTime);
+            List<String> names = salesTop10.stream().map(GoodsSalesDTO::getName).collect(Collectors.toList());
+            String nameList = StringUtils.join(names,",");
+            List<Integer> numbers = salesTop10.stream().map(GoodsSalesDTO::getNumber).collect(Collectors.toList());
+            String numberList = StringUtils.join(numbers, ",");
+            
+        
+        
+        return SalesTop10ReportVO.builder()
+                .nameList(nameList)
+                .numberList(numberList)
                 .build();
     }
 }
