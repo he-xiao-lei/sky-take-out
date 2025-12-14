@@ -91,7 +91,7 @@
                 and order_time &lt; #{end}
             </if>
             <if test="status!=null">
-                and status = 5
+                and status = #{status}
             </if>
         </where>
     </select>
