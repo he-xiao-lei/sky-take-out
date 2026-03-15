@@ -15,7 +15,7 @@ sky:
     endpoint: "oss-cn-hangzhou.aliyuncs.com"
     bucket-name: "suiseiseki-javaai"
     access-key-secret: "eVhpVCw8C7kmW4CcxnEZCCLCklVNkW"
-    access-key-id: "LTAI5tJTL48T6797zRe1N1ym"
+#    access-key-id: "LTAI5tJTL48T6797zRe1N1ym"
   wechat:
-    appid: wx2e65ab7659bfadf7
-    secret: 41b2b2b3c3540791c15f9b78f87f4e25
+#    appid: wx2e65ab7659bfadf7
+#    secret: 41b2b2b3c3540791c15f9b78f87f4e25

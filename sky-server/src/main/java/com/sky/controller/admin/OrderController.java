@@ -25,24 +25,27 @@ public class OrderController {
     
     @GetMapping("/conditionSearch")
     @ApiOperation("订单搜索")
-    public Result<PageResult> conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO){
-        log.info("搜索订单{}",ordersPageQueryDTO);
-        PageResult pageResult =orderService.conditionSearch(ordersPageQueryDTO);
+    public Result<PageResult> conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
+        log.info("搜索订单{}", ordersPageQueryDTO);
+        PageResult pageResult = orderService.conditionSearch(ordersPageQueryDTO);
         
         return Result.success(pageResult);
     }
+    
     @GetMapping("/statistics")
     @ApiOperation("查询各个状态订单的数量")
-    public Result<OrderStatisticsVO> statistics(){
+    public Result<OrderStatisticsVO> statistics() {
         OrderStatisticsVO orderStatistics = orderService.getOrderStatistics();
         return Result.success(orderStatistics);
     }
+    
     @GetMapping("/details/{id}")
     @ApiOperation("查看订单详情")
-    public Result<OrderVO> details(@PathVariable Integer id){
+    public Result<OrderVO> details(@PathVariable Integer id) {
         OrderVO details = orderService.details(id);
         return Result.success(details);
     }
+    
     /**
      * 接单
      *
@@ -50,32 +53,36 @@ public class OrderController {
      */
     @PutMapping("/confirm")
     @ApiOperation("接单")
-    public Result confirm(@RequestBody OrdersConfirmDTO ordersConfirmDTO){
+    public Result confirm(@RequestBody OrdersConfirmDTO ordersConfirmDTO) {
         orderService.confirm(ordersConfirmDTO);
         return Result.success();
     }
+    
     @PutMapping("/rejection")
     @ApiOperation("拒单")
-    public Result rejection(@RequestBody OrdersRejectionDTO ordersRejectionDTO){
+    public Result rejection(@RequestBody OrdersRejectionDTO ordersRejectionDTO) {
         orderService.rejection(ordersRejectionDTO);
         return Result.success();
     }
+    
     @PutMapping("/cancel")
     @ApiOperation("取消订单")
-    public Result cancel(@RequestBody OrdersCancelDTO ordersCancelDTO){
+    public Result cancel(@RequestBody OrdersCancelDTO ordersCancelDTO) {
         orderService.cancel(ordersCancelDTO);
         return Result.success();
         
     }
+    
     @PutMapping("/delivery/{id}")
     @ApiOperation("派送订单")
-    public Result delivery(@PathVariable(value = "id") Long id){
+    public Result delivery(@PathVariable(value = "id") Long id) {
         orderService.delivery(id);
         return Result.success();
     }
+    
     @PutMapping("/complete/{id}")
     @ApiOperation("完成订单")
-    public Result complete(@PathVariable(value = "id") Integer id){
+    public Result complete(@PathVariable(value = "id") Integer id) {
         orderService.complete(id);
         return Result.success();
     }
